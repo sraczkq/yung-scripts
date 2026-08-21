@@ -2306,7 +2306,7 @@ task.spawn(function()
                             
                             for _, coin in ipairs(coins) do
                                 if coin:IsA("BasePart") or coin:IsA("Model") then
-                                    if not table.find(ignoredCoins, coin) and (coin.Name == "Coin_Server" or coin.Name:lower():find("coin")) then
+                                    if not table.find(ignoredCoins, coin) and (coin.Name == "Coin_Server" or coin.Name:lower():find("coin")) and not coin:GetAttribute("Collected") then
                                         local pos = coin:GetPivot().Position
                                         local dist = (hrp.Position - pos).Magnitude
                                         if dist < shortestDist then
