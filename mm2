@@ -1389,44 +1389,7 @@ KillMurdererBindButton.MouseButton1Click:Connect(function()
     end)
 end)
 
-local StabReachEnabled = false
-local StabReachRadius = 15
 
-CreateToggle("Stab Reach", CombatColumn, function(state)
-    StabReachEnabled = state
-end)
-
-CreateSlider("Stab Reach Radius", CombatColumn, 5, 50, 15, function(val)
-    StabReachRadius = val
-end)
-
-task.spawn(function()
-    while task.wait(0.1) do
-        if StabReachEnabled then
-            local char = player.Character
-            if char then
-                local knife = char:FindFirstChild("Knife")
-                if knife and knife:FindFirstChild("Handle") then
-                    local hrp = char:FindFirstChild("HumanoidRootPart")
-                    if hrp then
-                        for _, p in ipairs(game:GetService("Players"):GetPlayers()) do
-                            if p ~= player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") and p.Character:FindFirstChild("Humanoid") and p.Character.Humanoid.Health > 0 and IsPlayerAlive(p.Name) then
-                                local targetHrp = p.Character.HumanoidRootPart
-                                local dist = (hrp.Position - targetHrp.Position).Magnitude
-                                if dist <= StabReachRadius then
-                                    if typeof(firetouchinterest) == "function" then
-                                        firetouchinterest(knife.Handle, targetHrp, 0)
-                                        firetouchinterest(knife.Handle, targetHrp, 1)
-                                    end
-                                end
-                            end
-                        end
-                    end
-                end
-            end
-        end
-    end
-end)
 
 local SharpShooterEnabled = false
 CreateToggle("Sharp Shooter", CombatColumn, function(state)
@@ -1802,13 +1765,17 @@ local function CreateConfigDropdown(parent)
             if v:IsA("TextButton") then v:Destroy() end
         end
         local files = {}
+        local uniqueNames = {}
         if isfolder and listfiles and isfolder(ConfigFolderName) then
             local success, rawFiles = pcall(function() return listfiles(ConfigFolderName) end)
             if success and rawFiles then
                 for _, file in ipairs(rawFiles) do
                     if file:match("%.json$") then
                         local name = file:match("([^/\\]+)%.json$")
-                        if name then table.insert(files, name) end
+                        if name and not uniqueNames[name] then 
+                            uniqueNames[name] = true
+                            table.insert(files, name) 
+                        end
                     end
                 end
             end
